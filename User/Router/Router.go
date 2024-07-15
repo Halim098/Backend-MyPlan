@@ -1,8 +1,8 @@
 package Router
 
 import (
-	"MyPlant-User/Controller"
-	"MyPlant-User/Middleware"
+	"MyPlan-User/Controller"
+	"MyPlan-User/Middleware"
 
 	"github.com/gin-gonic/gin"
 )

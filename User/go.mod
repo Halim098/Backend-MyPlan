@@ -1,4 +1,4 @@
-module MyPlant-User
+module MyPlan-User
 
 go 1.22.3
 

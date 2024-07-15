@@ -1,9 +1,9 @@
 package main
 
 import (
-	"MyPlant-User/Database"
-	"MyPlant-User/Model"
-	"MyPlant-User/Router"
+	"MyPlan-User/Database"
+	"MyPlan-User/Model"
+	"MyPlan-User/Router"
 
 	"github.com/joho/godotenv"
 )

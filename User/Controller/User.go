@@ -1,9 +1,9 @@
 package Controller
 
 import (
-	"MyPlant-User/Database"
-	"MyPlant-User/Helper"
-	"MyPlant-User/Model"
+	"MyPlan-User/Database"
+	"MyPlan-User/Helper"
+	"MyPlan-User/Model"
 	"fmt"
 	"net/http"
 
