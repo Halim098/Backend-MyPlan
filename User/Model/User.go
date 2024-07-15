@@ -67,3 +67,15 @@ func (u *User) UpdateUsername (username string, db *gorm.DB) (error){
 	return nil
 }
 
+func (u *User) UpdatePassword (password string, db *gorm.DB) (error){
+	err := u.BeforeSave(db)
+	if err != nil {
+		return err
+	}
+
+	err = db.Exec("UPDATE users SET password = ?, updated_at = ? WHERE username = ? AND password = ?", password, time.Now(), u.Username,u.Password).Error
+	if err != nil {
+		return errors.New("wrong password")
+	}
+	return nil
+}
