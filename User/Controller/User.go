@@ -2,6 +2,7 @@ package Controller
 
 import (
 	"MyPlant-User/Database"
+	"MyPlant-User/Helper"
 	"MyPlant-User/Model"
 	"net/http"
 
@@ -56,5 +57,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+	token, err := Helper.GenerateToken(int(dbUser.ID), dbUser.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token":token})
 }
