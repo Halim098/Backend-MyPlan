@@ -10,7 +10,7 @@ import (
 
 var key = []byte(os.Getenv("JWT_SECRET"))
 
-func GenerateToken(id int, username string) (string, error) {
+func GenerateToken(username string) (string, error) {
 	tokenTTL, err := strconv.Atoi(os.Getenv("JWT_Time"))
 	if err != nil {
 		return "", err
@@ -18,7 +18,6 @@ func GenerateToken(id int, username string) (string, error) {
 	
 	claims := jwt.MapClaims{
 		"username": username,
-		"id" : id,
 		"exp": time.Now().Add(time.Minute * time.Duration(tokenTTL)).Unix(),
 	}
 
