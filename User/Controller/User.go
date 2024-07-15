@@ -4,6 +4,7 @@ import (
 	"MyPlant-User/Database"
 	"MyPlant-User/Helper"
 	"MyPlant-User/Model"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -103,7 +104,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if  userInput.Username == "" || userInput.Password == "" {
+	if userInput.Password == ""  || (userInput.Username == "" && userInput.NewPassword == "") {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
@@ -117,6 +118,7 @@ func UpdateUser(c *gin.Context) {
 	err = user.ValidatePassword(userInput.Password)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Wrong Password"})
+		fmt.Println(userInput.Password)
 		return
 	}
 
@@ -126,14 +128,24 @@ func UpdateUser(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update username"})
 			return
 		}
+
+		user,err = Model.GetUserByUsername(userInput.Username, Database.DB)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Username updated", "username": user.Username})
 	}
 
 	if userInput.NewPassword != "" {
 		user.Password = userInput.NewPassword
-		err = user.BeforeSave(Database.DB)
+		user.BeforeSave(Database.DB)
+		err = user.UpdatePassword(user.Password, Database.DB)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
 			return
 		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Password updated"})
 	}
 }
