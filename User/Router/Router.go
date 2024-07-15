@@ -14,5 +14,6 @@ func SetupRouter() *gin.Engine {
 
 	r.Use(Middleware.Auth())
 	r.GET("/user", Controller.GetUser)
+	r.PUT("/user", Controller.UpdateUser)
 	return r
 }
