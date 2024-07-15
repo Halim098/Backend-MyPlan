@@ -16,7 +16,7 @@ type User struct {
 
 func GetUserByUsername(username string,db *gorm.DB) (*User, error) {
 	var user User
-	err:= db.Raw("SELECT * FROM users WHERE username = ?", username).Scan(&user)
+	err:= db.Raw("SELECT id, username, created_at, updated_at FROM users WHERE username = ?", username).Scan(&user)
 	if err.Error != nil {
 		return nil, err.Error
 	}
@@ -52,5 +52,18 @@ func (u *User) BeforeSave(db *gorm.DB) (err error) {
 
 func (u *User) ValidatePassword(password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+}
+
+func (u *User) UpdateUsername (username string, db *gorm.DB) (error){
+	err := u.BeforeSave(db)
+	if err != nil {
+		return err
+	}
+
+	err = db.Exec("UPDATE users SET username = ?, updated_at = ? WHERE username = ? AND password = ?", username, time.Now(), u.Username,u.Password).Error
+	if err != nil {
+		return errors.New("wrong password")
+	}
+	return nil
 }
 
