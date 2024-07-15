@@ -9,6 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type userInput struct {
+	Username string `json:"username"`
+	Password string `json:"password" binding:"required"`
+	NewPassword string `json:"new_password"`
+}
+
 func Register(c *gin.Context) {
 	var user Model.User
 	var err error
@@ -76,4 +82,58 @@ func GetUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"id": user.ID, "username": user.Username, "created_at" : user.CreatedAt, "updated_at" : user.UpdatedAt})
+}
+
+func UpdateUser(c *gin.Context) {
+	username, _ := c.Get("username")
+
+	var user *Model.User
+
+	var userInput userInput = userInput{
+		Username: "",
+		Password: "",
+		NewPassword: "",
+	}
+
+	var err error
+
+	err = c.ShouldBindJSON(&userInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	if  userInput.Username == "" || userInput.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	user, err = Model.GetUserByUsername(username.(string), Database.DB)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	err = user.ValidatePassword(userInput.Password)
+	if err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Wrong Password"})
+		return
+	}
+
+	if userInput.Username != "" {
+		err = user.UpdateUsername(userInput.Username, Database.DB)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update username"})
+			return
+		}
+	}
+
+	if userInput.NewPassword != "" {
+		user.Password = userInput.NewPassword
+		err = user.BeforeSave(Database.DB)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
+			return
+		}
+	}
 }
