@@ -16,7 +16,7 @@ type User struct {
 
 func GetUserByUsername(username string,db *gorm.DB) (*User, error) {
 	var user User
-	err:= db.Raw("SELECT id, username, created_at, updated_at FROM users WHERE username = ?", username).Scan(&user)
+	err:= db.Raw("SELECT id, username, created_at, updated_at, password FROM users WHERE username = ?", username).Scan(&user)
 	if err.Error != nil {
 		return nil, err.Error
 	}
@@ -55,12 +55,7 @@ func (u *User) ValidatePassword(password string) error {
 }
 
 func (u *User) UpdateUsername (username string, db *gorm.DB) (error){
-	err := u.BeforeSave(db)
-	if err != nil {
-		return err
-	}
-
-	err = db.Exec("UPDATE users SET username = ?, updated_at = ? WHERE username = ? AND password = ?", username, time.Now(), u.Username,u.Password).Error
+	err := db.Exec("UPDATE users SET username = ?, updated_at = ? WHERE username = ?", username, time.Now(), u.Username).Error
 	if err != nil {
 		return errors.New("wrong password")
 	}
@@ -68,12 +63,7 @@ func (u *User) UpdateUsername (username string, db *gorm.DB) (error){
 }
 
 func (u *User) UpdatePassword (password string, db *gorm.DB) (error){
-	err := u.BeforeSave(db)
-	if err != nil {
-		return err
-	}
-
-	err = db.Exec("UPDATE users SET password = ?, updated_at = ? WHERE username = ? AND password = ?", password, time.Now(), u.Username,u.Password).Error
+	err := db.Exec("UPDATE users SET password = ?, updated_at = ? WHERE username = ?", password, time.Now(), u.Username).Error
 	if err != nil {
 		return errors.New("wrong password")
 	}
