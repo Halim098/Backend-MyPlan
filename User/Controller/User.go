@@ -65,3 +65,15 @@ func Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token":token})
 }
+
+func GetUser(c *gin.Context) {
+	username, _ := c.Get("username")
+
+	user, err := Model.GetUserByUsername(username.(string), Database.DB)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"id": user.ID, "username": user.Username, "created_at" : user.CreatedAt, "updated_at" : user.UpdatedAt})
+}
