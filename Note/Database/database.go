@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc){
+func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc){
 
     defer cancel()
 
@@ -22,7 +22,7 @@ func close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc)
     }()
 }
 
-func connect(uri string)(*mongo.Client, context.Context, context.CancelFunc, error) {
+func Connect(uri string)(*mongo.Client, context.Context, context.CancelFunc, error) {
 
     ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Second)
 
@@ -30,7 +30,7 @@ func connect(uri string)(*mongo.Client, context.Context, context.CancelFunc, err
     return client, ctx, cancel, err
 }
 
-func ping(client *mongo.Client, ctx context.Context) error {
+func Ping(client *mongo.Client, ctx context.Context) error {
 
     if err := client.Ping(ctx, readpref.Primary()); err != nil {
         return err
