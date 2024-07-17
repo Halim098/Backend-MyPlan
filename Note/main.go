@@ -2,10 +2,18 @@ package main
 
 import (
 	"MyPlan-Note/Database"
+
+	//env
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	client, ctx, cancel, err := Database.Connect("mongodb://localhost:27017")
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading env file")
+	}
+
+	client, ctx, cancel, err := Database.Connect()
     if err != nil {
         panic(err)
     }

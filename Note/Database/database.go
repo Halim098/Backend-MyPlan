@@ -4,6 +4,7 @@ import (
 	// import mongodb driver
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,8 +23,13 @@ func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc)
     }()
 }
 
-func Connect(uri string)(*mongo.Client, context.Context, context.CancelFunc, error) {
+func Connect()(*mongo.Client, context.Context, context.CancelFunc, error) {
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
 
+	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s", user, password, host, port)
     ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Second)
 
     client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
