@@ -22,3 +22,12 @@ type Note struct {
 func GetCollection() *mongo.Collection {
 	return DB.Client.Database("myplan").Collection("notes")
 }
+
+func (n *Note) Save() (*mongo.InsertOneResult,error) {
+	Collection := GetCollection()
+	Data := bson.M{
+		"title": n.Title,
+		"content": n.Content,
+	}
+	return Collection.InsertOne(DB.Ctx, Data)
+}
