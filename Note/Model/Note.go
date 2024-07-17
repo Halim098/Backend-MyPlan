@@ -32,6 +32,22 @@ func (n *Note) Save() (*mongo.InsertOneResult,error) {
 	return Collection.InsertOne(DB.Ctx, Data)
 }
 
+func (n *Note) Update(id string) (*mongo.UpdateResult, error) {
+	Collection := GetCollection()
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{"_id": objectID}
+	update := bson.M{
+		"$set": bson.M{
+			"title": n.Title,
+			"content": n.Content,
+		},
+	}
+	return Collection.UpdateOne(DB.Ctx, filter, update)
+}
+
 func Find() ([]Note, error) {
 	Collection := GetCollection()
 	cursor, err := Collection.Find(DB.Ctx, bson.D{})
