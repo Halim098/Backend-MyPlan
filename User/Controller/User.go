@@ -4,7 +4,6 @@ import (
 	"MyPlan-User/Database"
 	"MyPlan-User/Helper"
 	"MyPlan-User/Model"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -118,7 +117,6 @@ func UpdateUser(c *gin.Context) {
 	err = user.ValidatePassword(userInput.Password)
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Wrong Password"})
-		fmt.Println(userInput.Password)
 		return
 	}
 
