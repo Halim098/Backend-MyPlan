@@ -31,3 +31,34 @@ func (n *Note) Save() (*mongo.InsertOneResult,error) {
 	}
 	return Collection.InsertOne(DB.Ctx, Data)
 }
+
+func Find() ([]Note, error) {
+	Collection := GetCollection()
+	cursor, err := Collection.Find(DB.Ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(DB.Ctx)
+
+	var notes []Note
+	for cursor.Next(DB.Ctx) {
+		var note Note
+		if err := cursor.Decode(&note); err != nil {
+			return nil, err
+		}
+		notes = append(notes, note)
+	}
+
+	return notes, nil
+}
+
+func FindOne(id string) (Note, error) {
+	Collection := GetCollection()
+	var note Note
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return note, err
+	}
+	err = Collection.FindOne(DB.Ctx, bson.M{"_id": objectID}).Decode(&note)
+	return note, err
+}
