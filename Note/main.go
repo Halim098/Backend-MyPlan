@@ -19,5 +19,8 @@ func main() {
 
     defer Database.Close(Database.Client, cancel)
 
-    Database.Ping()
+    err = Database.Ping()
+	if err != nil {
+		panic(err)
+	}
 }

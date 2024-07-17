@@ -43,9 +43,7 @@ func Connect()(context.CancelFunc, error) {
 }
 
 func Ping() error {
-	collection := Client.Database("myplan").Collection("notes")
-
-	fmt.Println(collection)
+	_ = Client.Database("myplan").Collection("notes")
 
     if err := Client.Ping(Ctx, readpref.Primary()); err != nil {
         return err
