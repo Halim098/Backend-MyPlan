@@ -3,7 +3,6 @@ package main
 import (
 	"MyPlan-Note/Database"
 
-	//env
 	"github.com/joho/godotenv"
 )
 
@@ -13,12 +12,12 @@ func main() {
 		panic("Error loading env file")
 	}
 
-	client, ctx, cancel, err := Database.Connect()
+	cancel, err := Database.Connect()
     if err != nil {
         panic(err)
     }
 
-    defer Database.Close(client, ctx, cancel)
+    defer Database.Close(Database.Client, cancel)
 
-    Database.Ping(client, ctx)
+    Database.Ping()
 }
