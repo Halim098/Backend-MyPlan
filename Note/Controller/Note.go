@@ -59,3 +59,15 @@ func UpdateNoteHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+func GetAllNoteHandler(c *gin.Context) {
+	username, _ := c.Get("username")
+
+	data, err := Model.Find(username.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get notes"})
+		return
+	}
+
+	c.JSON(http.StatusOK, data)
+}
