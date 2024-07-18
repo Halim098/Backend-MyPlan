@@ -2,6 +2,8 @@ package Model
 
 import (
 	DB "MyPlan-Note/Database"
+	"crypto/sha1"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -9,14 +11,17 @@ import (
 )
 
 type Content struct {
-	Title   string `json:"content_title" bson:"content_title"`
-	Content string `json:"content" bson:"content"`
+	Title   string `json:"title" bson:"title" binding:"required"`
+	Content string `json:"content" bson:"content" binding:"required"`
 }
 
 type Note struct {
 	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Title   string             `json:"title" bson:"title"`
-	Content []Content          `json:"content" bson:"content"`
+	Username string            `json:"username" bson:"username" binding:"required"`
+	Title   string             `json:"title" bson:"title" binding:"required"`
+	Status string             `json:"status" bson:"status"`
+	Link string               `json:"link" bson:"link"`
+	Content []Content          `json:"content" bson:"content" binding:"required"`
 }
 
 func GetCollection() *mongo.Collection {
@@ -25,10 +30,15 @@ func GetCollection() *mongo.Collection {
 
 func (n *Note) Save() (*mongo.InsertOneResult,error) {
 	Collection := GetCollection()
+	n.CreateLink()
 	Data := bson.M{
 		"title": n.Title,
 		"content": n.Content,
+		"username": n.Username,
+		"link" : n.Link,
+		"status": n.Status,
 	}
+
 	return Collection.InsertOne(DB.Ctx, Data)
 }
 
@@ -43,14 +53,15 @@ func (n *Note) Update(id string) (*mongo.UpdateResult, error) {
 		"$set": bson.M{
 			"title": n.Title,
 			"content": n.Content,
+			"status": n.Status,
 		},
 	}
 	return Collection.UpdateOne(DB.Ctx, filter, update)
 }
 
-func Find() ([]Note, error) {
+func Find(username string) ([]Note, error) {
 	Collection := GetCollection()
-	cursor, err := Collection.Find(DB.Ctx, bson.D{})
+	cursor, err := Collection.Find(DB.Ctx, bson.M{"username": username})
 	if err != nil {
 		return nil, err
 	}
@@ -77,4 +88,11 @@ func FindOne(id string) (Note, error) {
 	}
 	err = Collection.FindOne(DB.Ctx, bson.M{"_id": objectID}).Decode(&note)
 	return note, err
+}
+
+func (n *Note) CreateLink() {
+	var sha = sha1.New()
+    sha.Write([]byte(n.ID.Hex()))
+    var encrypted = sha.Sum(nil)
+    n.Link = fmt.Sprintf("%x", encrypted)
 }
