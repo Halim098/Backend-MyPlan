@@ -12,6 +12,8 @@ func InsertNoteHandler(c *gin.Context) {
 		Title: "",
 		Content: nil,
 		Status: "private",
+		Username: "",
+		Link: "",
 	}
 
 	username , _ := c.Get("username")
@@ -24,7 +26,7 @@ func InsertNoteHandler(c *gin.Context) {
 
 	id, err := note.Save()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to Insert note"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to save note", "error": err.Error()})
 		return
 	}
 
