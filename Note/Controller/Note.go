@@ -90,3 +90,26 @@ func GetNoteByIDHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, note)
 }
 
+func DeleteNoteHandler(c *gin.Context) {
+	username, _ := c.Get("username")
+	id := c.Param("id")
+
+	data, err := Model.FindOne(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ID not found"})
+		return
+	}
+
+	if data.Username != username.(string) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	result, err := Model.Delete(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete note"})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
