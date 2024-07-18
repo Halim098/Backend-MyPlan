@@ -22,13 +22,19 @@ func InsertNoteHandler(c *gin.Context) {
 
 	note.Username = username.(string)
 
-	_, err := note.Save()
+	id, err := note.Save()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to Insert note"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, note)
+	c.JSON(http.StatusCreated, gin.H{
+		"id": id.InsertedID,
+		"username": note.Username,
+		"title": note.Title,
+		"content": note.Content,
+		"status": note.Status,
+	})
 }
 
 func UpdateNoteHandler(c *gin.Context) {
