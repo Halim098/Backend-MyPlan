@@ -96,3 +96,13 @@ func (n *Note) CreateLink() {
     var encrypted = sha.Sum(nil)
     n.Link = fmt.Sprintf("%x", encrypted)
 }
+
+func Delete(id string) (*mongo.DeleteResult, error) {
+	Collection := GetCollection()
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.M{"_id": objectID}
+	return Collection.DeleteOne(DB.Ctx, filter)
+}
