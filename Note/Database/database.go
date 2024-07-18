@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -36,7 +35,6 @@ func Connect()(context.CancelFunc, error) {
 	password := os.Getenv("DB_PASSWORD")
 
 	uri := fmt.Sprintf("mongodb://%s:%s@%s:%s", user, password, host, port)
-    Ctx, cancel = context.WithTimeout(context.Background(), 30 * time.Second)
 
     Client, err = mongo.Connect(Ctx, options.Client().ApplyURI(uri))
     return cancel, err
