@@ -45,7 +45,7 @@ func UpdateNoteHandler(c *gin.Context) {
 	
 	data, err := Model.FindOne(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "ID not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get note", "error": err.Error()})
 		return
 	}
 
@@ -61,11 +61,14 @@ func UpdateNoteHandler(c *gin.Context) {
 
 	result, err := data.Update(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update note"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to update note", "error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Note updated",
+		"result": result,
+	})
 }
 
 func GetAllNoteHandler(c *gin.Context) {
@@ -86,7 +89,7 @@ func GetNoteByIDHandler(c *gin.Context) {
 
 	note,err := Model.FindOne(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "ID not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get note", "error": err.Error()})
 		return
 	}
 
@@ -104,7 +107,7 @@ func DeleteNoteHandler(c *gin.Context) {
 
 	data, err := Model.FindOne(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "ID not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get note", "error": err.Error()})
 		return
 	}
 
@@ -115,9 +118,12 @@ func DeleteNoteHandler(c *gin.Context) {
 
 	result, err := Model.Delete(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete note"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete note", "error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Note deleted",
+		"result": result,
+	})
 }
