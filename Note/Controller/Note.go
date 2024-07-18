@@ -71,3 +71,22 @@ func GetAllNoteHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, data)
 }
+
+func GetNoteByIDHandler(c *gin.Context) {
+	id := c.Param("id")
+	username, _ := c.Get("username")
+
+	note,err := Model.FindOne(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ID not found"})
+		return
+	}
+
+	if note.Username != username.(string) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	c.JSON(http.StatusOK, note)
+}
+
