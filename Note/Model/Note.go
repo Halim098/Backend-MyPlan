@@ -4,6 +4,7 @@ import (
 	DB "MyPlan-Note/Database"
 	"crypto/sha1"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -92,7 +93,8 @@ func FindOne(id string) (Note, error) {
 
 func (n *Note) CreateLink() {
 	var sha = sha1.New()
-    sha.Write([]byte(n.ID.Hex()))
+	link := fmt.Sprintf("%s%s%s", n.Username, n.ID.String(), time.Now().String())
+    sha.Write([]byte(link))
     var encrypted = sha.Sum(nil)
     n.Link = fmt.Sprintf("%x", encrypted)
 }
