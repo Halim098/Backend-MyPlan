@@ -2,6 +2,7 @@ package main
 
 import (
 	"MyPlan-Note/Database"
+	"MyPlan-Note/Router"
 
 	"github.com/joho/godotenv"
 )
@@ -23,4 +24,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	r := Router.SetupRouter()
+	r.Run(":8081")
 }
